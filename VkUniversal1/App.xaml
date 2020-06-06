@@ -1,0 +1,48 @@
+﻿<Application
+    x:Class="VkUniversal1.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:VkUniversal1">
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary>
+                    <ResourceDictionary.ThemeDictionaries>
+                        <ResourceDictionary x:Key="Default" />
+                        <ResourceDictionary x:Key="Light">
+                            <SolidColorBrush x:Key="ChatsListBackgroundBrush"
+                                             Color="#C3C3C3" />
+                            <AcrylicBrush x:Key="AccountViewCollapsedPaneBackground"
+                                          BackgroundSource="HostBackdrop"
+                                          TintColor="#C3C3C3"
+                                          FallbackColor="#C3C3C3"
+                                          TintOpacity=".8" />
+                            <AcrylicBrush x:Key="AccountViewExpandedPaneBackground"
+                                          BackgroundSource="Backdrop"
+                                          TintColor="#C3C3C3"
+                                          FallbackColor="#C3C3C3"
+                                          TintOpacity=".8" />
+                        </ResourceDictionary>
+                        <ResourceDictionary x:Key="Dark">
+                            <SolidColorBrush x:Key="ChatsListBackgroundBrush"
+                                             Color="#232323" />
+                            <AcrylicBrush x:Key="AccountViewCollapsedPaneBackground"
+                                          BackgroundSource="HostBackdrop"
+                                          TintColor="#232323"
+                                          FallbackColor="#232323"
+                                          TintOpacity=".8" />
+                            <AcrylicBrush x:Key="AccountViewExpandedPaneBackground"
+                                          BackgroundSource="Backdrop"
+                                          TintColor="#232323"
+                                          FallbackColor="#232323"
+                                          TintOpacity=".8" />
+                        </ResourceDictionary>
+                        <ResourceDictionary x:Key="HighContrast" />
+                    </ResourceDictionary.ThemeDictionaries>
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+    
+</Application>
