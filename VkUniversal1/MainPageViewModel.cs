@@ -8,6 +8,6 @@ namespace VkUniversal1
         public long SelectedPeerId { get; set; }
         public ObservableCollection<ChatsListItemData> InboxesList { get; set; }
         public ObservableCollection<ChatsListItemData> ChatsList { get; set; }
-        public Dictionary<long, ObservableCollection<ChatsListItemData>> MessageList { get; set; }
+        public Dictionary<long, ObservableCollection<ChatsListItemData>> MessageDict { get; set; }
     }
 }

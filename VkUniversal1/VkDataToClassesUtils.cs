@@ -1,18 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
-using System.Net;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
-using Windows.ApplicationModel.Chat;
-using Windows.Graphics.Imaging;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Imaging;
 using VkNet.Enums.Filters;
 using VkNet.Enums.SafetyEnums;
-using VkNet.Model;
 using VkNet.Model.RequestParams;
 
 namespace VkUniversal1

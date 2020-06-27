@@ -73,7 +73,9 @@ namespace VkUniversal1
             var clickedListViewItem = e.ClickedItem as ChatsListItemData;
             if (clickedListViewItem?.PeerId != null)
                 _viewModel.SelectedPeerId = clickedListViewItem.PeerId;
-            MessagesList.ItemsSource = _viewModel.MessageList[_viewModel.SelectedPeerId];
+            if (!_viewModel.MessageDict.ContainsKey(_viewModel.SelectedPeerId))
+                _viewModel.MessageDict.Add(_viewModel.SelectedPeerId, new ObservableCollection<ChatsListItemData>());
+            MessagesList.ItemsSource = _viewModel.MessageDict[_viewModel.SelectedPeerId];
             if (clickedListViewItem != null)
             {
                 NameThisChatTextBlock.Text = clickedListViewItem.Name;
@@ -156,14 +158,16 @@ namespace VkUniversal1
         {
         }
 
-        private static async Task ViewAttachmentInWindow(/*ReadOnlyCollection<Attachment>*/Attachment attachments)
+        private static async Task ViewAttachmentInWindow( /*ReadOnlyCollection<Attachment>*/ Attachment attachments)
         {
             var newView = CoreApplication.CreateNewView();
             var newViewId = 0;
             await newView.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
                 var frame = new Frame();
-                frame.Navigate(typeof(PhotoViewerPage), ((Photo)attachments.Instance).Sizes.Last().Url.ToString()); // todo pages dependent on attachment type
+                frame.Navigate(typeof(PhotoViewerPage),
+                    ((Photo) attachments.Instance).Sizes.Last().Url
+                    .ToString()); // todo pages dependent on attachment type
                 Window.Current.Content = frame;
                 Window.Current.Activate();
 
@@ -171,7 +175,7 @@ namespace VkUniversal1
             });
             var viewShown = await ApplicationViewSwitcher.TryShowAsStandaloneAsync(newViewId);
         }
-        
+
         private async void OnNewMessageReceived(Message message)
         {
             // var forwardedMessages = message.ForwardedMessages?.ToArray() ?? new Message[] { };
@@ -183,7 +187,7 @@ namespace VkUniversal1
             {
                 if (message.FromId == null || message.PeerId == null) return;
                 string readableName;
-                var foundPeer = db.VkPeers.Find(message.FromId);
+                var foundPeer = await db.VkPeers.FindAsync(message.FromId);
                 if (foundPeer != null)
                     readableName = foundPeer.ReadableName;
                 else
@@ -200,14 +204,13 @@ namespace VkUniversal1
                 for (var i = 0; i < _viewModel.ChatsList.Count; i++)
                 {
                     var item = _viewModel.ChatsList[i];
-                    if (item.PeerId == message.PeerId)
-                    {
-                        indexToUpdate = i;
-                        itemToUpdate = item;
-                        db.VkPeers.Find(item.PeerId).LastMessage = message.Text;
-                        break;
-                    }
+                    if (item.PeerId != message.PeerId) continue;
+                    indexToUpdate = i;
+                    itemToUpdate = item;
+                    (await db.VkPeers.FindAsync(item.PeerId)).LastMessage = message.Text;
+                    break;
                 }
+
                 _viewModel.ChatsList.RemoveAt(indexToUpdate);
                 _viewModel.ChatsList.Insert(0, new ChatsListItemData
                 {
@@ -215,7 +218,7 @@ namespace VkUniversal1
                     Message = message.Text,
                     Name = itemToUpdate?.Name,
                     PeerId = message.PeerId ?? 0,
-                    IsThisUser = itemToUpdate?.IsThisUser??false
+                    IsThisUser = itemToUpdate?.IsThisUser ?? false
                 });
 
                 await db.VkMessages.AddAsync(new VkMessage
@@ -228,7 +231,7 @@ namespace VkUniversal1
                 });
                 await db.SaveChangesAsync();
 
-                _viewModel.MessageList[(long) message.PeerId].Add(new ChatsListItemData
+                _viewModel.MessageDict[(long) message.PeerId].Add(new ChatsListItemData
                 {
                     Name = readableName,
                     Message = message.Text,
@@ -282,27 +285,28 @@ namespace VkUniversal1
                         IsThisUser = false
                     });
                 }
-                foreach (var inbox in db.Inboxes) 
+
+                foreach (var inbox in db.Inboxes)
                     _viewModel.InboxesList.Add(new ChatsListItemData
                     {
                         Name = inbox.ReadableName,
                         Avatar = await ImageUtils.ConvertToImageSource(inbox.Avatar)
                     });
             }
-            
-_viewModel.MessageList = new Dictionary<long, ObservableCollection<ChatsListItemData>>();
+
+            _viewModel.MessageDict = new Dictionary<long, ObservableCollection<ChatsListItemData>>();
             foreach (var item in _viewModel.ChatsList)
-                _viewModel.MessageList.Add(item.PeerId, new ObservableCollection<ChatsListItemData>());
+                _viewModel.MessageDict.Add(item.PeerId, new ObservableCollection<ChatsListItemData>());
 
             using (var db = new CacheDbContext())
             {
                 foreach (var vkMessage in db.VkMessages)
                 {
-                    if (!_viewModel.MessageList.ContainsKey(vkMessage.PeerId))
-                        _viewModel.MessageList.Add(vkMessage.PeerId, new ObservableCollection<ChatsListItemData>());
+                    if (!_viewModel.MessageDict.ContainsKey(vkMessage.PeerId))
+                        _viewModel.MessageDict.Add(vkMessage.PeerId, new ObservableCollection<ChatsListItemData>());
                     //FromId - because one peer can have several senders
                     var vkPeer = await db.VkPeers.FindAsync(vkMessage.FromId);
-                    _viewModel.MessageList[vkMessage.PeerId].Add(new ChatsListItemData
+                    _viewModel.MessageDict[vkMessage.PeerId].Add(new ChatsListItemData
                     {
                         Avatar = await ImageUtils.ConvertToImageSource(vkPeer.Avatar),
                         Message = vkMessage.Text,
@@ -312,7 +316,7 @@ _viewModel.MessageList = new Dictionary<long, ObservableCollection<ChatsListItem
                     });
                 }
             }
-            
+
             if (isInternetConnected)
             {
                 _viewModel.InboxesList = await VkDataToClassesUtils.GetInboxesAsItemData();
@@ -324,8 +328,7 @@ _viewModel.MessageList = new Dictionary<long, ObservableCollection<ChatsListItem
                 ChatsListProgressBar.IsEnabled = false;
                 ChatsListProgressBar.Visibility = Visibility.Collapsed;
             }
-            
-            
+
 
             if (!isInternetConnected) return;
             var vkLongPoll = new VKLongPoll

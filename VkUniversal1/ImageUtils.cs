@@ -18,20 +18,30 @@ namespace VkUniversal1
                 return await wc.DownloadDataTaskAsync(imageSource);
         }
 
-        public static async Task<ImageSource> ConvertToImageSource( byte[] imageBuffer)
+        public static async Task<ImageSource> ConvertToImageSource(byte[] imageBuffer)
         {
             if (imageBuffer == null) return null;
             ImageSource imageSource;
             using (var stream = new MemoryStream(imageBuffer))
             {
                 var ras = stream.AsRandomAccessStream();
-                var decoder = await BitmapDecoder.CreateAsync(BitmapDecoder.JpegDecoderId, ras);
+                BitmapDecoder decoder;
+                try
+                {
+                    decoder = await BitmapDecoder.CreateAsync(BitmapDecoder.JpegDecoderId, ras);
+                }
+                catch (Exception)
+                {
+                    decoder = await BitmapDecoder.CreateAsync(BitmapDecoder.PngDecoderId, ras);
+                }
+
                 var provider = await decoder.GetPixelDataAsync();
                 var buffer = provider.DetachPixelData();
                 var bitmap = new WriteableBitmap((int)decoder.PixelWidth, (int)decoder.PixelHeight);
                 await bitmap.PixelBuffer.AsStream().WriteAsync(buffer, 0, buffer.Length);
                 imageSource = bitmap;
             }
+
             return imageSource;
         }
     }
