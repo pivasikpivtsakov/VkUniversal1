@@ -1,5 +1,6 @@
 ﻿using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using VkUniversal1.DbContext;
 
 namespace VkUniversal1
 {
@@ -19,7 +20,7 @@ namespace VkUniversal1
                     db.SaveChanges();
                 }
 
-                VKObjects.InitializeApi();
+                VkObjects.InitializeApi();
                 (Window.Current.Content as Frame)?.Navigate(typeof(MainPage));
             }
         }

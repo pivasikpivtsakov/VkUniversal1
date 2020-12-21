@@ -24,7 +24,7 @@ namespace VkUniversal1
 
         private void UpdateLongPollParams()
         {
-            _longPollParams = VKObjects.Api.Messages.GetLongPollServer(true);
+            _longPollParams = VkObjects.Api.Messages.GetLongPollServer(true);
         }
 
         private void RunEventHandlers(LongPollHistoryResponse historyResponse)
@@ -46,7 +46,7 @@ namespace VkUniversal1
                 LongPollHistoryResponse longPollHistory;
                 try
                 {
-                    longPollHistory = await VKObjects.Api.Messages.GetLongPollHistoryAsync(
+                    longPollHistory = await VkObjects.Api.Messages.GetLongPollHistoryAsync(
                         new MessagesGetLongPollHistoryParams
                         {
                             Ts = ulong.Parse(ts),

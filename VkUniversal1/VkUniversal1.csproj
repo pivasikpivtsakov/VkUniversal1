@@ -11,7 +11,7 @@
     <AssemblyName>VkUniversal1</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.18362.0</TargetPlatformVersion>
+    <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.19041.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.18362.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
@@ -119,8 +119,14 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="CacheDbContext.cs" />
     <Compile Include="ChatsListItemData.cs" />
+    <Compile Include="DbContext\CacheDbContext.cs" />
+    <Compile Include="DbContext\InboxType.cs" />
+    <Compile Include="DbContext\SessionInfo.cs" />
+    <Compile Include="DbContext\VkInbox.cs" />
+    <Compile Include="DbContext\VkMessage.cs" />
+    <Compile Include="DbContext\VkPeer.cs" />
+    <Compile Include="DbContext\VkUser.cs" />
     <Compile Include="ImageUtils.cs" />
     <Compile Include="LoginPage.xaml.cs" />
     <Compile Include="LoginPageViewModel.cs" />
@@ -171,20 +177,10 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore">
-      <Version>3.1.5</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
-      <Version>3.1.5</Version>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
+      <Version>3.1.10</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite">
-      <Version>3.1.5</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
-      <Version>3.1.5</Version>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
+      <Version>3.1.10</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.2.10</Version>

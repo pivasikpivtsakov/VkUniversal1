@@ -13,6 +13,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using VkNet.Model;
 using VkNet.Model.Attachments;
+using VkUniversal1.DbContext;
 using Application = Windows.UI.Xaml.Application;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
@@ -187,18 +188,19 @@ namespace VkUniversal1
             {
                 if (message.FromId == null || message.PeerId == null) return;
                 string readableName;
-                var foundPeer = await db.VkPeers.FindAsync(message.FromId);
-                if (foundPeer != null)
-                    readableName = foundPeer.ReadableName;
+                var foundPeerByFromId = await db.VkPeers.FindAsync(message.FromId);
+                if (foundPeerByFromId != null)
+                    readableName = foundPeerByFromId.ReadableName;
                 else
                 {
                     var peer = (await VkUtils.GetAndCacheNewPeers(new[] {(long) message.FromId})).First();
                     readableName = message.FromId > 0
                         ? ((User) peer).FirstName + " " + ((User) peer).LastName
                         : ((Group) peer).Name;
-                    foundPeer = await db.VkPeers.FindAsync(message.FromId);
+                    foundPeerByFromId = await db.VkPeers.FindAsync(message.FromId);
                 }
-
+                var foundPeerByPeerId = await db.VkPeers.FindAsync(message.PeerId);
+                
                 var indexToUpdate = 0;
                 ChatsListItemData itemToUpdate = null;
                 for (var i = 0; i < _viewModel.ChatsList.Count; i++)
@@ -227,7 +229,8 @@ namespace VkUniversal1
                     Text = message.Text,
                     FromId = message.FromId ?? 0,
                     PeerId = message.PeerId ?? 0,
-                    VkPeer = foundPeer
+                    VkPeer = foundPeerByPeerId,
+                    ReceiveTime = DateTime.Now
                 });
                 await db.SaveChangesAsync();
 

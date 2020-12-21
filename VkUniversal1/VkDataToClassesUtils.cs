@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using VkNet.Enums.Filters;
 using VkNet.Enums.SafetyEnums;
 using VkNet.Model.RequestParams;
+using VkUniversal1.DbContext;
 
 namespace VkUniversal1
 {
@@ -13,7 +14,7 @@ namespace VkUniversal1
     {
         public static async Task<ObservableCollection<ChatsListItemData>> GetInboxesAsItemData()
         {
-            var thisUser = await VKObjects.Api.Users.GetAsync(new long[] { },
+            var thisUser = await VkObjects.Api.Users.GetAsync(new long[] { },
                 ProfileFields.Photo50 | ProfileFields.FirstName | ProfileFields.LastName);
             //this user is first, groups will go after
             //extract to another method
@@ -35,7 +36,7 @@ namespace VkUniversal1
                     };
                 }).First(),
             };
-            var groupsVkCollection = await VKObjects.Api.Groups.GetAsync(new GroupsGetParams
+            var groupsVkCollection = await VkObjects.Api.Groups.GetAsync(new GroupsGetParams
             {
                 Filter = GroupsFilters.Moderator,
                 Extended = true,
@@ -81,7 +82,7 @@ namespace VkUniversal1
 
         public static async Task<ObservableCollection<ChatsListItemData>> GetChatsListAsItemData(ulong? offset = null)
         {
-            var chats = await VKObjects.Api.Messages.GetConversationsAsync(new GetConversationsParams
+            var chats = await VkObjects.Api.Messages.GetConversationsAsync(new GetConversationsParams
             {
                 Count = 20,
                 Offset = offset
@@ -93,7 +94,7 @@ namespace VkUniversal1
                 Uri peerImageUri = null;
                 if (chat.Conversation.Peer.Type == ConversationPeerType.User)
                 {
-                    var user = (await VKObjects.Api.Users.GetAsync(new[] {chat.Conversation.Peer.Id},
+                    var user = (await VkObjects.Api.Users.GetAsync(new[] {chat.Conversation.Peer.Id},
                         ProfileFields.Photo50 | ProfileFields.FirstName | ProfileFields.LastName))[0];
                     peerName = user.FirstName + ' ' + user.LastName;
                     peerImageUri = user.Photo50;
@@ -107,7 +108,7 @@ namespace VkUniversal1
                 else if (chat.Conversation.Peer.Type == ConversationPeerType.Group)
                 {
                     //method requires all params bug in library
-                    var group = (await VKObjects.Api.Groups.GetByIdAsync(
+                    var group = (await VkObjects.Api.Groups.GetByIdAsync(
                         new[] {(-chat.Conversation.Peer.Id).ToString()},
                         "", GroupsFields.IsVerified))[0];
                     peerName = group.Name;

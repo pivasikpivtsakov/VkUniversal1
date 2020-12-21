@@ -5,6 +5,7 @@ using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Microsoft.EntityFrameworkCore;
+using VkUniversal1.DbContext;
 
 namespace VkUniversal1
 {
@@ -24,7 +25,7 @@ namespace VkUniversal1
 
         private void AuthWithKnownToken(SessionInfo sessionInfo)
         {
-            VKObjects.InitializeApi();
+            VkObjects.InitializeApi();
             Frame.Navigate(typeof(MainPage));
         }
 
@@ -44,7 +45,7 @@ namespace VkUniversal1
                     db.SaveChanges();
                 }
 
-                VKObjects.InitializeApi();
+                VkObjects.InitializeApi();
                 Frame.Navigate(typeof(MainPage));
             }
         }

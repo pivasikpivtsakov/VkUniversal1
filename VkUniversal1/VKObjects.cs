@@ -1,10 +1,11 @@
 ﻿using System.Linq;
 using VkNet;
 using VkNet.Model;
+using VkUniversal1.DbContext;
 
 namespace VkUniversal1
 {
-    public static class VKObjects
+    public static class VkObjects
     {
         public static VkApi Api { get; private set; }
 

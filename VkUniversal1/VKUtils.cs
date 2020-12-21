@@ -7,6 +7,7 @@ using VkNet.Enums.Filters;
 using VkNet.Model;
 using VkNet.Model.Attachments;
 using VkNet.Model.RequestParams;
+using VkUniversal1.DbContext;
 
 namespace VkUniversal1
 {
@@ -16,7 +17,7 @@ namespace VkUniversal1
             IEnumerable<MediaAttachment> attachments = null)
         {
             var random = new Random();
-            await VKObjects.Api.Messages.SendAsync(new MessagesSendParams
+            await VkObjects.Api.Messages.SendAsync(new MessagesSendParams
             {
                 PeerId = peerId,
                 RandomId = random.Next(),
@@ -69,12 +70,12 @@ namespace VkUniversal1
             var userIds = ids.Where(x => x > 0).ToList();
             var users = new ReadOnlyCollection<User>(new List<User>());
             if (userIds.Any())
-                users = await VKObjects.Api.Users.GetAsync(userIds, ProfileFields.Photo50);
+                users = await VkObjects.Api.Users.GetAsync(userIds, ProfileFields.Photo50);
             var groupIds = ids.Where(x => x < 0).Select(x => (-x).ToString()).ToList();
             var groups = new ReadOnlyCollection<Group>(new List<Group>());
             if (groupIds.Any())
             //groups.get requires all params
-                groups = await VKObjects.Api.Groups.GetByIdAsync(
+                groups = await VkObjects.Api.Groups.GetByIdAsync(
                 groupIds, "",
                 GroupsFields.IsVerified);
             using (var db = new CacheDbContext())
